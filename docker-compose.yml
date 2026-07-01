@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: rootpassword
+      POSTGRES_DB: staff_sync_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=root
+      - DB_PASSWORD=rootpassword
+      - DB_NAME=staff_sync_db
+      - JWT_SECRET=supersecretjwtkey123
+      - AWS_ACCESS_KEY_ID=dummy_access_key
+      - AWS_SECRET_ACCESS_KEY=dummy_secret_key
+      - AWS_REGION=us-east-1
+      - S3_BUCKET_NAME=staff-sync-bucket
+    depends_on:
+      - db
+
+volumes:
+  pgdata:
